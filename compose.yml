@@ -1,0 +1,36 @@
+services:
+  os2borgerpc-admin:
+    image: ghcr.io/os2borgerpc/os2borgerpc-admin-site:7.0.0
+    env_file:
+      - .env
+    volumes:
+      - admin-media:/media
+      - ./settings.py:/code/admin_site/os2borgerpc_admin/settings.py:ro
+    depends_on:
+      - db
+    ports:
+      - 9999:9999
+      - 8080:8080
+    stdin_open: true
+    tty: true
+    privileged: true
+  db:
+    image: postgres:latest
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - os2borgerpc-admin
+volumes:
+    admin-media:
+    postgres-data:
