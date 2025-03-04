@@ -5,7 +5,6 @@ services:
       - .env
     volumes:
       - admin-media:/media
-      - ./settings.py:/code/admin_site/os2borgerpc_admin/settings.py:ro
     depends_on:
       - db
     ports:
