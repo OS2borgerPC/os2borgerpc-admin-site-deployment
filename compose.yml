@@ -1,6 +1,6 @@
 services:
   os2borgerpc-admin:
-    image: ghcr.io/os2borgerpc/os2borgerpc-admin-site:7.0.0
+    image: ghcr.io/os2borgerpc/os2borgerpc-admin-site:7.0.1
     env_file:
       - .env
     volumes:
