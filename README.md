@@ -2,6 +2,34 @@
 
 This is a deployment tool designed for hosting the OS2BorgerPC Admin Site application using Docker. It provides a Docker-based setup and pre-configured files to simplify the deployment and management of the application.
 
+## Pre-installation Requirements
+
+### Secure Mode Configuration
+
+It is assumed that the server will run in secure mode using HTTPS (port 443). To ensure proper operation, you must have a valid domain name and an SSL certificate.
+
+**Steps to Enable Secure Mode:**
+
+- **Domain Name:** Use a fully qualified domain name (FQDN) that points to your server’s IP address. Update `nginx.conf` with your domain name in two locations.
+- **SSL Certificate:** Obtain a valid SSL certificate and the corresponding private key for your domain.  
+  - Place the certificate file (`nginx.crt`) and the private key file (`nginx.key`) inside the `ssl` directory.
+ 
+### Network Requirements
+
+The OS2BorgerPC Admin server can operate reliably within a protected internal network, provided that outgoing HTTP and HTTPS traffic is permitted.  
+This setup helps improve security while keeping the configuration simple.
+
+Even in this setup, it's recommended to configure the server to run in secure mode using HTTPS.
+
+### Make Your Server Available in the Connect Script
+
+When connecting a newly installed BorgerPC to your OS2BorgerPC Admin server, the connect script displays a list of available servers to choose from.  
+To include your server in this list, send an email to the coordination team at [os2borgerpc@os2.eu](mailto:os2borgerpc@os2.eu) with your server's domain name (FQDN).  
+
+Once received, we’ll update the list immediately, and the changes will take effect right away.
+
+
+
 ## Docker Compose Setup
 
 The deployment uses Docker Compose to manage the services. Here is an overview of the services defined in the `docker-compose.yml` file:
