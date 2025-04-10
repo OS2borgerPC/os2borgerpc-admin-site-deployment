@@ -1,14 +1,6 @@
-# OS2BorgerPC Admin Site Deployment
+# OS2BorgerPC Hosting and Deployment
 
-This is an experimental deployment setup for the OS2BorgerPC Admin Site. It can be used at your own risk.
-
-## Usage
-
-This setup is currently used in Sønderborg Kommune, where it is installed on a server that can only be accessed from the local network. There is no internet access to the server.
-
-## Security Considerations
-
-Security considerations for exposing this installation to the internet have not been made. If you plan to expose this setup to the internet, please ensure that you take appropriate security measures to protect the server and the application.
+This is a deployment tool designed for hosting the OS2BorgerPC Admin Site application using Docker. It provides a Docker-based setup and pre-configured files to simplify the deployment and management of the application.
 
 ## Docker Compose Setup
 
@@ -16,7 +8,7 @@ The deployment uses Docker Compose to manage the services. Here is an overview o
 
 ### Services
 
-- **os2borgerpc-admin**: This is the main service running the OS2BorgerPC Admin Site. It uses the image `ghcr.io/os2borgerpc/os2borgerpc-admin-site:7.0.0`. The service is configured to use environment variables from the `.env` file and mounts the `settings.py` file as read-only. It exposes ports `9999` and `8080`.
+- **os2borgerpc-admin**: This is the main service running the OS2BorgerPC Admin Site. It uses the image `ghcr.io/os2borgerpc/os2borgerpc-admin-site:7.0.1`. The service is configured to use environment variables from the `.env` file and mounts the `settings.py` file as read-only. It exposes ports `9999` and `8080`.
 
 - **db**: This service runs a PostgreSQL database using the `postgres:latest` image. It is configured to always restart and uses environment variables from the `.env` file. The database data is persisted using the `postgres-data` volume.
 
@@ -30,3 +22,7 @@ The deployment uses Docker Compose to manage the services. Here is an overview o
 ### Proxy and SSL Certificates
 
 The Nginx service acts as a reverse proxy for the `os2borgerpc-admin` service. It handles SSL termination and forwards requests to the appropriate backend service. The SSL certificates are stored in the `ssl` directory and are mounted into the Nginx container.
+
+## Security Considerations
+
+Security considerations for exposing this installation to the internet have not been made. If you plan to expose this setup to the internet, please ensure that you take appropriate security measures to protect the server and the application.
