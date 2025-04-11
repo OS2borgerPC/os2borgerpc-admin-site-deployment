@@ -2,3 +2,4 @@
 *.crt
 *.cer
 *.key
+nginx.conf

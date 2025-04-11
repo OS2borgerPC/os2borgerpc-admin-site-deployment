@@ -1,0 +1,78 @@
+version: '3'
+silent: true
+
+tasks:
+  default:
+    desc: The default task that shows help
+    cmds:
+      - task --list
+
+  install:
+    desc: Install the project
+    cmds:
+      - task _show_preinstall_notes
+      - task _prepare_nginx_conf # Add this step to prepare nginx.conf
+      - echo "Installing"
+      - docker compose --env-file .env -f compose.yml pull
+      - docker compose --env-file .env -f compose.yml up --force-recreate --detach --remove-orphans
+      - task _show_notes
+
+  reinstall:
+    desc: Reinstall from scratch. Removes the database, all containers, and volumes.
+    deps:
+      - down
+    cmds:
+      - task install
+
+  down:
+    desc: Remove all containers and volumes
+    deps:
+      - stop
+    cmds:
+      - docker compose --env-file .env -f compose.yml down -v
+
+  up:
+    desc: Take the environment up without altering the existing state of the containers
+    cmds:
+      - docker compose --env-file .env -f compose.yml up -d
+
+  stop:
+    desc: Stop all containers without altering anything else
+    cmds:
+      - docker compose --env-file .env -f compose.yml stop
+
+  _show_preinstall_notes:
+    cmds:
+      - echo ""
+      - echo "===================================================="
+      - echo "Pre-installation Requirements"
+      - echo "===================================================="
+      - echo ""
+      - echo "To proceed with the installation, ensure the following steps are completed:"
+      - echo "1. Update '.env'"
+      - echo "2. Place your SSL certificate files ('nginx.crt' and 'nginx.key') in the 'ssl' directory."
+      - echo ""
+      - echo "Have you completed the above pre-installation steps? (yes/no)"
+      - |
+        read answer && case $answer in
+          [Yy][Ee][Ss]) ;;
+          *) echo "Please complete the pre-install tasks before continuing."; exit 1;;
+        esac
+
+  _prepare_nginx_conf:
+    cmds:
+      - cp example.nginx.conf nginx.conf
+      - |
+        DOMAIN=$(grep ^DOMAIN= .env | cut -d '=' -f 2)
+        sed -i "s/\${DOMAIN}/$DOMAIN/g" nginx.conf
+
+  _show_notes:
+    cmds:
+      - |
+        DOMAIN=$(grep ^DOMAIN= .env | cut -d '=' -f 2)
+        echo ""
+        echo "===================================================="
+        echo "OS2Borgerpc Admin is now is available via the URLs below"
+        echo "===================================================="
+        echo "Admin: https://$DOMAIN"
+        echo "===================================================="
