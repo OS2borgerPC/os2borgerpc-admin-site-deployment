@@ -10,8 +10,30 @@ services:
     restart: unless-stopped
     networks:
       - app
-    env_file:
-      - .env
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      CORE_SCRIPT_COMMIT_HASH: ${CORE_SCRIPT_COMMIT_HASH}
+      CORE_SCRIPT_VERSION_TAG: ${CORE_SCRIPT_COMMIT_TAG}
+      PC_IMAGE_RELEASES_URL: ${PC_IMAGE_RELEASES_URL}
+      KIOSK_IMAGE_RELEASES_URL: ${KIOSK_IMAGE_RELEASES_URL}
+      DEBUG: ${DEBUG}
+      SECRET_KEY: ${SECRET_KEY}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      TIME_ZONE: ${TIME_ZONE}
+      LANGUAGE_CODE: ${LANGUAGE_CODE}
+      INITIALIZE_DATABASE: ${INITIALIZE_DATABASE}
+      LOG_LEVEL: ${LOG_LEVEL}
+      CICERO_URL: ${CICERO_URL}
+      CITIZEN_LOGIN_API_VALIDATOR: ${CITIZEN_LOGIN_API_VALIDATOR}
+      USE_X_FORWARDED_HOST: ${USE_X_FORWARDED_HOST}
+      SECURE_PROXY_SSL_HEADER: ${SECURE_PROXY_SSL_HEADER}
     volumes:
       - admin-media:/media
     depends_on:
@@ -27,8 +49,10 @@ services:
     restart: unless-stopped
     networks:
       - app
-    env_file:
-      - .env
+    environment:
+      POSTGRES_USER=${DB_USER}
+      POSTGRES_PASSWORD=${DB_PASSWORD}
+      POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres-data:/var/lib/postgresql/data
   nginx:
