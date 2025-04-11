@@ -1,6 +1,15 @@
+networks:
+  frontend:
+    external: true
+  app:
+    driver: bridge
+    internal: false
 services:
   os2borgerpc-admin:
     image: ghcr.io/os2borgerpc/os2borgerpc-admin-site:7.0.1
+    restart: unless-stopped
+    networks:
+      - app
     env_file:
       - .env
     volumes:
@@ -15,13 +24,19 @@ services:
     privileged: true
   db:
     image: postgres:latest
-    restart: always
+    restart: unless-stopped
+    networks:
+      - app
     env_file:
       - .env
     volumes:
       - postgres-data:/var/lib/postgresql/data
   nginx:
     image: nginx:latest
+    restart: unless-stopped
+    networks:
+      - app
+      - frontend
     ports:
       - 80:80
       - 443:443
