@@ -106,7 +106,6 @@ tasks:
         sed -i "s/\${DOMAIN}/$DOMAIN/g" nginx.conf
 
   _version_file:
-    desc: Write the value of VERSION from .env to a file called VERSION
     cmds:
       - |
         VERSION=$(grep ^VERSION= .env | cut -d '=' -f 2)
