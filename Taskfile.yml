@@ -11,8 +11,20 @@ tasks:
     desc: Install the project
     cmds:
       - task _show_preinstall_notes
+      - task _version_file
       - task _prepare_nginx_conf # Add this step to prepare nginx.conf
       - echo "Installing"
+      - docker compose --env-file .env -f compose.yml pull
+      - docker compose --env-file .env -f compose.yml up --force-recreate --detach --remove-orphans
+      - task _show_notes
+
+  upgrade: 
+    desc: Upgrades the admin site to a newer version
+    cmds:
+      - task _show_upgrade_notes
+      - task _version_file
+      - task stop
+      - docker compose --env-file .env -f compose.yml down
       - docker compose --env-file .env -f compose.yml pull
       - docker compose --env-file .env -f compose.yml up --force-recreate --detach --remove-orphans
       - task _show_notes
@@ -30,6 +42,11 @@ tasks:
       - stop
     cmds:
       - docker compose --env-file .env -f compose.yml down -v
+      - |
+        if [ -f VERSION ]; then
+          rm VERSION
+          echo "VERSION file deleted."
+        fi
 
   up:
     desc: Take the environment up without altering the existing state of the containers
@@ -41,6 +58,28 @@ tasks:
     cmds:
       - docker compose --env-file .env -f compose.yml stop
 
+  _show_upgrade_notes:
+    cmds:
+      - |
+        VERSION=$(grep ^VERSION= .env | cut -d '=' -f 2)
+        if [ -f VERSION ] && [ "$(cat VERSION)" = "$VERSION" ]; then
+          echo ""
+          echo "===================================================="
+          echo "It looks like version $VERSION is already installed."
+          echo "To set the version you want to upgrade to, edit the VERSION value in .env."
+          echo "===================================================="
+          exit 0
+        fi
+        echo ""
+        echo "===================================================="
+        echo "You are about to upgrade to version $VERSION."
+        echo "===================================================="
+        echo "Are you sure you want to continue? (yes/no)"
+        read answer && case $answer in
+          [Yy][Ee][Ss]) ;;
+          *) echo "Upgrade canceled."; exit 1;;
+        esac
+
   _show_preinstall_notes:
     cmds:
       - echo ""
@@ -49,7 +88,7 @@ tasks:
       - echo "===================================================="
       - echo ""
       - echo "To proceed with the installation, ensure the following steps are completed:"
-      - echo "1. Update '.env'"
+      - echo "1. Update '.env'. Change the passwords and secret keys."
       - echo "2. Place your SSL certificate files ('nginx.crt' and 'nginx.key') in the 'ssl' directory."
       - echo ""
       - echo "Have you completed the above pre-installation steps? (yes/no)"
@@ -66,13 +105,28 @@ tasks:
         DOMAIN=$(grep ^DOMAIN= .env | cut -d '=' -f 2)
         sed -i "s/\${DOMAIN}/$DOMAIN/g" nginx.conf
 
+  _version_file:
+    desc: Write the value of VERSION from .env to a file called VERSION
+    cmds:
+      - |
+        VERSION=$(grep ^VERSION= .env | cut -d '=' -f 2)
+        echo $VERSION > VERSION
+        echo "VERSION file updated with value: $VERSION"
+
   _show_notes:
     cmds:
       - |
         DOMAIN=$(grep ^DOMAIN= .env | cut -d '=' -f 2)
+        ADMIN_USERNAME=$(grep ^ADMIN_USERNAME= .env | cut -d '=' -f 2)
+        ADMIN_PASSWORD=$(grep ^ADMIN_PASSWORD= .env | cut -d '=' -f 2)
         echo ""
         echo "===================================================="
-        echo "OS2Borgerpc Admin is now is available via the URLs below"
+        echo "OS2Borgerpc Admin is now available via the URLs below"
         echo "===================================================="
         echo "Admin: https://$DOMAIN"
+        echo "Django Backend: https://$DOMAIN/admin"
+        echo "===================================================="
+        echo "You can log in with the following credentials:"
+        echo "Username: $ADMIN_USERNAME"
+        echo "Password: $ADMIN_PASSWORD"
         echo "===================================================="
