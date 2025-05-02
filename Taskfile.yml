@@ -12,7 +12,7 @@ tasks:
     cmds:
       - task _show_preinstall_notes
       - task _version_file
-      - task _prepare_nginx_conf # Add this step to prepare nginx.conf
+      - task _prepare_nginx_conf
       - echo "Installing"
       - docker compose --env-file .env -f compose.yml pull
       - docker compose --env-file .env -f compose.yml up --force-recreate --detach --remove-orphans
@@ -88,7 +88,7 @@ tasks:
       - echo "===================================================="
       - echo ""
       - echo "To proceed with the installation, ensure the following steps are completed:"
-      - echo "1. Update '.env'. Change the passwords and secret keys."
+      - echo "1. Update '.env'. Change at least DOMAIN, DB_PASSWORD and SECRET_KEY."
       - echo "2. Place your SSL certificate files ('nginx.crt' and 'nginx.key') in the 'ssl' directory."
       - echo ""
       - echo "Have you completed the above pre-installation steps? (yes/no)"
@@ -128,4 +128,7 @@ tasks:
         echo "You can log in with the following credentials:"
         echo "Username: $ADMIN_USERNAME"
         echo "Password: $ADMIN_PASSWORD"
+        echo "===================================================="
+        echo "IMPORTANT: Please change the password of the admin user right away."
+        echo "You can do this from the menu item 'Brugere' in the main menu of OS2BorgerPC Admin."
         echo "===================================================="
