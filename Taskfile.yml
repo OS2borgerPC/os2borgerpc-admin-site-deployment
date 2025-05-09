@@ -81,6 +81,24 @@ tasks:
         echo ""
         echo "===================================================="
         
+  backup_db:
+    desc: Perform a database dump and save it to the host filesystem
+    cmds:
+      - |
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        DB_BACKUP_DIR=$(pwd)/db_backups
+        FILENAME=$DB_BACKUP_DIR/db_backup_$TIMESTAMP.sql
+        echo "Performing database backup..."
+        mkdir -p $DB_BACKUP_DIR  # Ensure the backup directory exists
+        DB_USER=$(grep ^DB_USER= .env | cut -d '=' -f 2)
+        DB_NAME=$(grep ^DB_NAME= .env | cut -d '=' -f 2)
+        echo "Using database user: $DB_USER and database name: $DB_NAME"  # Debugging output
+        docker compose exec db pg_dump -U $DB_USER $DB_NAME > $FILENAME
+        if [ $? -eq 0 ]; then
+          echo "Database backup saved to $FILENAME"
+        else
+          echo "Database backup failed. Please check the logs for details."
+        fi
 
   _show_upgrade_notes:
     cmds:
