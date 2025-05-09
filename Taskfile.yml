@@ -58,6 +58,30 @@ tasks:
     cmds:
       - docker compose --env-file .env -f compose.yml stop
 
+  cron:
+    desc: Manually run all necessary cron jobs, and get automation suggestions
+    cmds:
+      - |
+        DOMAIN=$(grep ^DOMAIN= .env | cut -d '=' -f 2)
+        echo "Executing check_notifications..."
+        curl http://$DOMAIN:8080/jobs/check_notifications -f
+        echo ""
+        echo "Executing clean_up_database..."
+        curl http://$DOMAIN:8080/jobs/clean_up_database -f
+        echo ""
+        echo "===================================================="
+        echo "Automate job execution by adding the lines below to your crontab (crontab -e):"
+        echo "===================================================="
+        echo ""
+        echo "# Run check_notifications every 10 minutes"
+        echo "*/10 * * * * curl http://$DOMAIN:8080/jobs/check_notifications -f"
+        echo ""
+        echo "# Run clean_up_database once a week (Sunday at midnight)"
+        echo "0 0 * * 0 curl http://$DOMAIN:8080/jobs/clean_up_database -f"
+        echo ""
+        echo "===================================================="
+        
+
   _show_upgrade_notes:
     cmds:
       - |
