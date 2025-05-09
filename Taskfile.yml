@@ -3,12 +3,20 @@ silent: true
 
 tasks:
   default:
-    desc: The default task that shows help
+    desc: List available tasks
     cmds:
-      - task --list
+      - echo "Available tasks:"
+      - echo "task install - Install OS2BorgerPC Adminsite"
+      - echo "task upgrade - Upgrade OS2BorgerPC Adminsite to a newer version"
+      - echo "task start - Start the application by bringing all containers up"
+      - echo "task stop - Stop the application by stopping all containers"
+      - echo "task reinstall - Reinstall the application. WARNING Deletes volumes and containers"
+      - echo "task down - Remove the application. Deletes all volumes and containers"
+      - echo "task cron - Run cron jobs manually"
+      - echo "task backup_db - Perform a database dump"
 
   install:
-    desc: Install the project
+    desc: Install OS2BorgerPC Adminsite
     cmds:
       - task _show_preinstall_notes
       - task _version_file
@@ -19,7 +27,7 @@ tasks:
       - task _show_notes
 
   upgrade: 
-    desc: Upgrades the admin site to a newer version
+    desc: Upgrade OS2BorgerPC Adminsite to a newer version
     cmds:
       - task _show_upgrade_notes
       - task _version_file
@@ -30,14 +38,14 @@ tasks:
       - task _show_notes
 
   reinstall:
-    desc: Reinstall from scratch. Removes the database, all containers, and volumes.
+    desc: Reinstall the application. WARNING Deletes volumes and containers
     deps:
       - down
     cmds:
       - task install
 
   down:
-    desc: Remove all containers and volumes
+    desc: Remove the application. Deletes all volumes and containers
     deps:
       - stop
     cmds:
@@ -48,18 +56,18 @@ tasks:
           echo "VERSION file deleted."
         fi
 
-  up:
-    desc: Take the environment up without altering the existing state of the containers
+  start:
+    desc: Start the application by bringing all containers up
     cmds:
       - docker compose --env-file .env -f compose.yml up -d
 
   stop:
-    desc: Stop all containers without altering anything else
+    desc: Stop the application by stopping all containers
     cmds:
       - docker compose --env-file .env -f compose.yml stop
 
   cron:
-    desc: Manually run all necessary cron jobs, and get automation suggestions
+    desc: Run cron jobs manually
     cmds:
       - |
         DOMAIN=$(grep ^DOMAIN= .env | cut -d '=' -f 2)
@@ -82,7 +90,7 @@ tasks:
         echo "===================================================="
         
   backup_db:
-    desc: Perform a database dump and save it to the host filesystem
+    desc: Perform a database dump
     cmds:
       - |
         TIMESTAMP=$(date +%Y%m%d_%H%M%S)
