@@ -113,10 +113,13 @@ tasks:
         if [ -f VERSION ] && [ "$(cat VERSION)" = "$VERSION" ]; then
           echo ""
           echo "===================================================="
-          echo "It looks like version $VERSION is already installed."
-          echo "To set the version you want to upgrade to, edit the VERSION value in .env."
+          echo "Upgrading to release $VERSION..."
+          echo "Ups! It looks like release $VERSION is the version currently installed."
+          echo ""
+          echo "Check out if there is a later release here: https://github.com/OS2borgerPC/os2borgerpc-admin-site/pkgs/container/os2borgerpc-admin-site"
+          echo "Edit VERSION in .env with the release tag you want to upgrade to. Then re-run task upgrade."
           echo "===================================================="
-          exit 0
+          exit 1
         fi
         echo ""
         echo "===================================================="
