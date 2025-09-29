@@ -20,6 +20,14 @@ tasks:
     desc: Install OS2BorgerPC Adminsite
     cmds:
       - task _show_preinstall_notes
+      - |
+        # Check if the external network 'frontend' exists, create if not
+        if ! docker network ls --format '{{.Name}}' | grep -wq frontend; then
+          echo "Creating external network 'frontend'"
+          docker network create frontend
+        else
+          echo "External network 'frontend' already exists"
+        fi
       - task _version_file
       - task _prepare_nginx_conf
       - echo "Installing"
