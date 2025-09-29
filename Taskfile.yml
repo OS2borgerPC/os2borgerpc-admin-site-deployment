@@ -8,10 +8,11 @@ tasks:
       - echo "Available tasks:"
       - echo "task install - Install OS2BorgerPC Adminsite"
       - echo "task upgrade - Upgrade OS2BorgerPC Adminsite to a newer version"
-      - echo "task start - Start the application by bringing all containers up"
+      - echo "task up - Start the application by bringing all containers up"
       - echo "task stop - Stop the application by stopping all containers"
-      - echo "task reinstall - Reinstall the application. WARNING Deletes volumes and containers"
-      - echo "task down - Remove the application. Deletes all volumes and containers"
+      - echo "task reinstall - Reinstall the application. WARNING Deletes the database and uploaded files!"
+      - echo "task purge - Remove the application. WARNING Deletes the database and uploaded files!"
+      - echo "task down - Remove all containers"
       - echo "task cron - Run cron jobs manually"
       - echo "task backup_db - Perform a database dump"
 
@@ -38,14 +39,14 @@ tasks:
       - task _show_notes
 
   reinstall:
-    desc: Reinstall the application. WARNING Deletes volumes and containers
+    desc: Reinstall the application. WARNING Deletes the database and uploaded files!
     deps:
-      - down
+      - purge
     cmds:
       - task install
 
-  down:
-    desc: Remove the application. Deletes all volumes and containers
+  purge:
+    desc: Remove the application. WARNING Deletes the database and uploaded files!
     deps:
       - stop
     cmds:
@@ -56,7 +57,19 @@ tasks:
           echo "VERSION file deleted."
         fi
 
-  start:
+  down:
+    desc: Remove all containers
+    deps:
+      - stop
+    cmds:
+      - docker compose --env-file .env -f compose.yml down
+      - |
+        if [ -f VERSION ]; then
+          rm VERSION
+          echo "VERSION file deleted."
+        fi
+
+  up:
     desc: Start the application by bringing all containers up
     cmds:
       - docker compose --env-file .env -f compose.yml up -d
