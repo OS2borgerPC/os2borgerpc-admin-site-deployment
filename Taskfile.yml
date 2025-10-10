@@ -38,12 +38,13 @@ tasks:
   upgrade: 
     desc: Upgrade OS2BorgerPC Adminsite to a newer version
     cmds:
-      - task _show_upgrade_notes
+      - task _show_pre_upgrade_notes
       - task _version_file
       - task stop
       - docker compose --env-file .env -f compose.yml down
       - docker compose --env-file .env -f compose.yml pull
       - docker compose --env-file .env -f compose.yml up --force-recreate --detach --remove-orphans
+      - task _show_upgrade_notes
 
   reinstall:
     desc: Reinstall the application. WARNING Deletes the database and uploaded files!
@@ -126,7 +127,7 @@ tasks:
           echo "Database backup saved to $FILENAME"
         fi
 
-  _show_upgrade_notes:
+  _show_pre_upgrade_notes:
     cmds:
       - |
         VERSION=$(grep ^VERSION= .env | cut -d '=' -f 2)
@@ -134,10 +135,8 @@ tasks:
           echo ""
           echo "===================================================="
           echo "Upgrading to release $VERSION..."
-          echo "Ups! It looks like release $VERSION is the version currently installed."
+          echo "Ups! It looks like release $VERSION is the version currently installed. Aborting."
           echo ""
-          echo "Check out if there is a later release here: https://github.com/OS2borgerPC/os2borgerpc-admin-site/pkgs/container/os2borgerpc-admin-site"
-          echo "Edit VERSION in .env with the release tag you want to upgrade to. Then re-run task upgrade."
           echo "===================================================="
           exit 1
         fi
@@ -203,3 +202,14 @@ tasks:
         echo "IMPORTANT: Please change the password of the admin user right away."
         echo "You can do this from the menu item 'Brugere' in the main menu of OS2BorgerPC Admin."
         echo "===================================================="
+
+  _show_upgrade_notes:
+    desc: Show upgrade notes after upgrading the application
+    cmds:
+      - |
+        if [ -f VERSION ]; then
+          echo "You have upgraded OS2BorgerPC Admin to $(cat VERSION)"
+        else
+          echo "VERSION file not found."
+        fi
+
