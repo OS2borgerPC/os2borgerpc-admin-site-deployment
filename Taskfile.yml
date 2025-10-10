@@ -44,7 +44,6 @@ tasks:
       - docker compose --env-file .env -f compose.yml down
       - docker compose --env-file .env -f compose.yml pull
       - docker compose --env-file .env -f compose.yml up --force-recreate --detach --remove-orphans
-      - task _show_notes
 
   reinstall:
     desc: Reinstall the application. WARNING Deletes the database and uploaded files!
