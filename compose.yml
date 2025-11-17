@@ -67,6 +67,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
+      - admin-media:/media:ro
     depends_on:
       - os2borgerpc-admin
 volumes:
