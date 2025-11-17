@@ -45,7 +45,7 @@ services:
     tty: true
     privileged: true
   db:
-    image: postgres:latest
+    image: postgres:18
     restart: unless-stopped
     networks:
       - app
