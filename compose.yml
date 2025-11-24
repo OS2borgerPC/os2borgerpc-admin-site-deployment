@@ -44,6 +44,11 @@ services:
     stdin_open: true
     tty: true
     privileged: true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
   db:
     image: postgres:18
     restart: unless-stopped
